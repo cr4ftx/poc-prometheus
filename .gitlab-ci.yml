@@ -1,0 +1,19 @@
+variables:
+  AWS_EC2_URL: 15.237.53.142
+
+deploy:
+  before_script:
+    - eval $(ssh-agent -s)
+    - ssh-keyscan $AWS_EC2_URL > known_hosts
+    - chmod 644 known_hosts
+    - aws s3 cp s3://pano-keys/Keys/admin.pem admin.pem
+    - chmod 400 admin.pem
+  script:
+    - rsync -rave "ssh -i admin.pem -o UserKnownHostsFile=./known_hosts"
+      . ubuntu@$AWS_EC2_URL:~/prometheus
+    - ssh -i admin.pem -o UserKnownHostsFile=./known_hosts ubuntu@$AWS_EC2_URL
+      "cd ~/prometheus && docker-compose down && docker-compose up -d"
+  after_script:
+    - rm admin.pem
+  tags:
+    - shell

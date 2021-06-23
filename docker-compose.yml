@@ -1,0 +1,38 @@
+version: '3.6'
+
+services:
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - $PWD/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - $PWD/prometheus/rules:/etc/prometheus/rules
+    ports:
+      - 9090:9090
+
+  alertmanager:
+    image: prom/alertmanager
+    volumes:
+      - $PWD/alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml
+    ports:
+      - 9093:9093
+
+  grafana:
+    image: grafana/grafana
+    volumes:
+      - grafana-storage:/var/lib/grafana
+      - $PWD/grafana/grafana.ini:/etc/grafana/grafana.ini
+    ports:
+      - 3000:3000
+
+  cloudwatch:
+    image: prom/cloudwatch-exporter
+    volumes:
+      - $PWD/cloudwatch-exporter/config.yml:/config/config.yml
+    ports:
+      - 9106:9106
+    environment:
+      AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+      AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+
+volumes:
+  grafana-storage:

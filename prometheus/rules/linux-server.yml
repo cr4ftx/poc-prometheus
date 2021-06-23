@@ -1,0 +1,30 @@
+groups:
+  - name: linux-server
+    rules:
+      - alert: GitlabCIDown
+        expr: up{job="gitlab-ci"} == 0
+        labels:
+          severity: severe
+        annotations:
+          summary: Gitlab CI is down
+
+      - alert: SendleadProdDown
+        expr: up{job="prod_sendleads"} == 0
+        labels:
+          severity: severe
+        annotations:
+          summary: Sendlead prod is down
+
+      - alert: Sendlead Filesystem Warning
+        expr: (100 - ((node_filesystem_avail_bytes{job="prod_sendleads",mountpoint="/"} * 100) / node_filesystem_size_bytes{job="prod_sendleads",mountpoint="/"})) > 80
+        labels:
+          severity: warning
+        annotations:
+          summary: Sendlead FS is 80% full
+
+      - alert: Sendlead Filesystem Severe
+        expr: (100 - ((node_filesystem_avail_bytes{job="prod_sendleads",mountpoint="/"} * 100) / node_filesystem_size_bytes{job="prod_sendleads",mountpoint="/"})) > 90
+        labels:
+          severity: severe
+        annotations:
+          summary: Sendlead FS is 90% full

@@ -1,0 +1,25 @@
+global:
+  scrape_interval: 15s
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - alertmanager:9093
+
+rule_files:
+  - /etc/prometheus/rules/*.yml
+
+scrape_configs:
+  - job_name: gitlab-ci
+    static_configs:
+      - targets: ['13.36.246.131:9100']
+
+  - job_name: prod_sendleads
+    static_configs:
+      - targets: ['15.188.155.237:9100']
+
+  - job_name: rds
+    scrape_interval: 5m
+    static_configs:
+      - targets: ['cloudwatch:9106']
